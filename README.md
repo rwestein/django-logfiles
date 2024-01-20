@@ -12,3 +12,6 @@ LOGFILES = {
     'SORT': ('-date',)
 }
 ```
+
+All settings are optional, so even if you don't provide any settings, the above settings are
+the default settings.
