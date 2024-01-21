@@ -81,15 +81,21 @@ class Log(models.Model):
                     return True
         return False
 
-    def retrieve_tail(self):
-        if not self.path_is_legal():
+    def retrieve_tail(self, ignore_path_check=False, slow=False):
+        if not ignore_path_check and not self.path_is_legal():
             raise PermissionDenied()
+        file_ = open(self.filepath)
+        if not slow:
+            # Fast forward to somewhere near the end of large logfiles to speed up the read
+            filesize = os.path.getsize(self.filepath)
+            generous_average_line_length=512
+            file_.seek(max(filesize-settings.TAIL*generous_average_line_length, 0))
         tail = []
-        for line_ in open(self.filepath):
+        for line_ in file_:
             tail.append(line_)
             if len(tail) > settings.TAIL:
                 tail = tail[-settings.TAIL:]
-        return '\n'.join(tail)
+        return ''.join(tail)
 
     def __getattribute__(self, item):
         if item == 'tail':
