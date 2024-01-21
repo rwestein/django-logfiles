@@ -10,7 +10,7 @@ DEFAULT_SETTINGS = {
 class ServerLogSettings:
     def __getattr__(self, item):
         try:
-            return django.conf.settings.SERVERLOGS.get(item, DEFAULT_SETTINGS[item])
+            return django.conf.settings.LOGFILES.get(item, DEFAULT_SETTINGS[item])
         except AttributeError:
             return DEFAULT_SETTINGS[item]
 

@@ -15,7 +15,7 @@ from .settings import settings
 
 
 class LogQuerySet(QuerySet):
-    _order_by = ()
+    ordered = ()
 
     def get_logs(self):
         if self._result_cache is not None:
@@ -28,11 +28,11 @@ class LogQuerySet(QuerySet):
                     log.date = datetime.datetime.fromtimestamp(os.path.getmtime(logfile))
                     log.size = os.path.getsize(logfile)
                     logs.append(log)
-        if self._order_by:
-            ordering = self._order_by[0].strip('-')
+        if self.ordered:
+            ordering = self.ordered[0].strip('-')
             def get_sort_field(log):
                 return getattr(log, ordering)
-            logs.sort(key=get_sort_field, reverse=self._order_by[0].startswith('-'))
+            logs.sort(key=get_sort_field, reverse=self.ordered[0].startswith('-'))
         self._result_cache = logs
         return logs
 
@@ -41,7 +41,7 @@ class LogQuerySet(QuerySet):
 
     def order_by(self, *ordering):
         # A bit of a hack, but OK since there's really only one sort order used anyway
-        LogQuerySet._order_by = ordering
+        LogQuerySet.ordered = ordering
         return self
 
     def __len__(self):
