@@ -5,8 +5,8 @@ import datetime
 
 from django.db import models
 from django.db.models.query import QuerySet
-
 from .settings import settings
+from django.core.exceptions import PermissionDenied
 
 # This model file contains some fancy trickery to define a model, but avoid database
 # access to that model for at least the purpose of what it is used for: viewing logfiles
@@ -74,7 +74,16 @@ class Log(models.Model):
     def filename(self):
         return Path(self.filepath).name
 
+    def path_is_legal(self):
+        for path in settings.PATHS:
+            for logfile in glob.glob(str(path)):
+                if self.filepath == logfile and os.access(logfile, os.R_OK):
+                    return True
+        return False
+
     def retrieve_tail(self):
+        if not self.path_is_legal():
+            raise PermissionDenied()
         tail = []
         for line_ in open(self.filepath):
             tail.append(line_)
