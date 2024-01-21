@@ -97,8 +97,14 @@ class Log(models.Model):
                 tail = tail[-settings.TAIL:]
         return ''.join(tail)
 
+    def retrieve_size(self):
+        return os.path.getsize(self.filepath)
+
+    def retrieve_date(self):
+        return datetime.datetime.fromtimestamp(os.path.getmtime(self.filepath))
+
     def __getattribute__(self, item):
-        if item == 'tail':
+        if item in ['tail', 'size', 'date']:
             # Override the actual retrieval, just get it straight from storage
-            return self.retrieve_tail()
+            return getattr(self, 'retrieve_'+item)()
         return super().__getattribute__(item)
