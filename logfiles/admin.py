@@ -5,8 +5,13 @@ from .settings import settings
 
 @admin.register(Log)
 class LogAdmin(admin.ModelAdmin):
-    list_display = ('filename', 'date', 'size')
+    list_display = ('filename', 'date', 'size_formatted')
     ordering = settings.SORT
+
+    def size_formatted(self, obj):
+        return '{:_}'.format(obj.size).replace('_', ' ')
+    size_formatted.admin_order_field = 'size'
+    size_formatted.short_description = 'Size'
 
     class Media:
         css = { 'all': ('admin/css/logfile.css',) }
