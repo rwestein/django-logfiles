@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "django-logfiles"
-version = "0.0.5"
+version = "1.0.0"
 authors = [
     { name="Ronnie van 't Westeinde", email="info@westeron.net" }
 ]
